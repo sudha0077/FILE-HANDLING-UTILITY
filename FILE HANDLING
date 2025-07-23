@@ -1,0 +1,76 @@
+import java.io.*;
+import java.nio.file.*;
+import java.util.*;
+
+public class FileOperationDemo {
+   
+    private static final String FILE_NAME = "sample.txt";
+    
+    public static void main(String[] args) {
+       
+        writeFile("Hello, this is the first line.\nThis line will be modified later.");
+        
+        
+        System.out.println("Initial File Content:");
+        readFile();
+        
+        appendToFile("This is an appended line.");
+
+        
+        modifyLineInFile(2, "This line has been updated!");
+
+        
+        System.out.println("\nFinal File Content:");
+        readFile();
+    }
+    
+    
+    private static void writeFile(String content) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME))) {
+            writer.write(content);
+            System.out.println("File written successfully!\n");
+        } catch (IOException e) {
+            System.err.println("Error writing file: " + e.getMessage());
+        }
+    }
+    
+    
+    private static void readFile() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + e.getMessage());
+        }
+    }
+    
+
+    private static void appendToFile(String newLine) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
+            writer.newLine();
+            writer.write(newLine);
+            System.out.println("\nAppended line to file.\n");
+        } catch (IOException e) {
+            System.err.println("Error appending to file: " + e.getMessage());
+        }
+    }
+    
+ 
+    private static void modifyLineInFile(int lineNumber, String newContent) {
+        try {
+            List<String> lines = Files.readAllLines(Paths.get(FILE_NAME));
+            if (lineNumber - 1 < lines.size()) {
+                lines.set(lineNumber - 1, newContent);
+            } else {
+                System.out.println("Line " + lineNumber + " not found. No modification.");
+                return;
+            }
+            Files.write(Paths.get(FILE_NAME), lines);
+            System.out.println("Modified line " + lineNumber + " successfully.\n");
+        } catch (IOException e) {
+            System.err.println("Error modifying file: " + e.getMessage());
+        }
+    }
+}
